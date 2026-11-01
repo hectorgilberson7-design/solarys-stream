@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Admin · SOLARYS Stream</title><meta name="robots" content="noindex">
+<link rel="stylesheet" href="/style.css"></head><body>
+<header><a class="logo" href="/"><i></i>SOLARYS Stream</a><span class="note">Administration</span></header>
+<main style="max-width:760px;margin:24px auto">
+<section id="login"><h2>Connexion</h2>
+<p><input class="t" id="pw" type="password" placeholder="Mot de passe admin" aria-label="Mot de passe admin"> <button class="btn" id="go">Entrer</button></p>
+<p class="note" id="lerr"></p></section>
+<div id="app" hidden>
+<section><h2>Ajouter une source légale (.zip)</h2>
+<p>Le zip doit contenir un <code>manifest.json</code>. Il est vérifié, testé et activé automatiquement : aucune validation manuelle. Aucun code du zip n’est exécuté.</p>
+<p><input type="file" id="f" accept=".zip,application/zip" aria-label="Fichier zip"> <button class="btn" id="up">Envoyer</button></p>
+<p id="msg" role="status"></p>
+<p><a href="/exemple-source.zip" download>Télécharger un zip d’exemple</a></p></section>
+<section><h2>Sources actives</h2><div id="list"></div><p class="note" id="vol"></p></section>
+<section><h2>Règles</h2><p class="note">Ajoutez uniquement des sources dont vous détenez les droits de diffusion (champ <code>license</code> obligatoire). Les flux doivent être en HTTPS (MP4 ou HLS .m3u8). Les adresses privées sont refusées.</p></section>
+</div></main>
+<script>
+const $=s=>document.querySelector(s);let PW=sessionStorage.getItem('sl_pw')||'';
+const call=async(m,b)=>{const r=await fetch('/api/admin',{method:m,headers:{'content-type':'application/json','x-admin-password':PW},body:b?JSON.stringify(b):undefined});return[r.status,await r.json()]};
+const el=(t,txt)=>Object.assign(document.createElement(t),{textContent:txt});
+async function load(){const[s,d]=await call('GET');
+  if(s!==200){$('#lerr').textContent=d.error||'Erreur';$('#login').hidden=false;$('#app').hidden=true;return}
+  $('#login').hidden=true;$('#app').hidden=false;
+  const L=$('#list');L.replaceChildren();
+  if(!d.providers.length)L.append(el('p','Aucune source ajoutée.'));
+  d.providers.forEach(p=>{const row=el('p',`${p.name} · ${p.count} titres · ajoutée le ${p.addedAt.slice(0,10)} `);
+    const b=el('button','Supprimer');b.className='chip';b.onclick=async()=>{await call('POST',{action:'delete',slug:p.slug});load()};row.append(b);L.append(row)});
+  $('#vol').textContent=d.persistent?'':'Stockage temporaire : connectez Upstash Redis (Vercel Marketplace) pour conserver les sources entre les redémarrages.'}
+$('#go').onclick=()=>{PW=$('#pw').value;sessionStorage.setItem('sl_pw',PW);load()};
+$('#up').onclick=async()=>{const f=$('#f').files[0],m=$('#msg');if(!f){m.textContent='Choisissez un zip.';return}
+  if(f.size>3e6){m.textContent='Zip trop gros (3 Mo max).';return}
+  m.textContent='Vérification et test en cours…';
+  const buf=new Uint8Array(await f.arrayBuffer());let bin='';for(let i=0;i<buf.length;i+=8192)bin+=String.fromCharCode(...buf.subarray(i,i+8192));
+  const[s,d]=await call('POST',{action:'upload',data:btoa(bin)});
+  m.textContent=s===200?`Source « ${d.name} » activée (${d.count} titres).`:'Refusé : '+d.error;if(s===200)load()};
+if(PW)load();
+</script></body></html>

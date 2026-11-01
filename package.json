@@ -1,0 +1,1 @@
+{"name":"solarys-stream","version":"1.0.0","private":true,"dependencies":{"fflate":"0.8.2"},"engines":{"node":">=18"}}

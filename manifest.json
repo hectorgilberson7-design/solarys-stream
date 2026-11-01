@@ -1,0 +1,11 @@
+{
+  "name": "Ma Source",
+  "license": "Contrat de diffusion n°12345 avec mon fournisseur (remplacer)",
+  "baseUrl": "https://api.exemple.com",
+  "headers": { "Authorization": "Bearer MA_CLE_API" },
+  "catalog": {
+    "path": "/v1/films",
+    "itemsPath": "data.items",
+    "map": { "id": "id", "title": "titre", "year": "annee", "poster": "affiche", "overview": "resume", "genre": "genre", "stream": "video_url" }
+  }
+}

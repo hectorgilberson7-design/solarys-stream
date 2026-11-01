@@ -1,0 +1,47 @@
+:root{--night:#1a1330;--dusk:#2b2050;--sun:#ffb347;--ember:#ff6b4a;--paper:#f6eddc;--mute:#b9aed3;--r:10px}
+@media(prefers-color-scheme:light){:root{--night:#fbf4e6;--dusk:#efe2c8;--paper:#2a1f4a;--mute:#6d6190}}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:70px}
+body{background:var(--night);color:var(--paper);font:16px/1.5 "DM Sans",system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+h1,h2,h3,.logo{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;letter-spacing:-.02em}
+a{color:inherit}
+header{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:12px 4vw;background:color-mix(in srgb,var(--night) 88%,transparent);backdrop-filter:blur(10px)}
+.logo{font-weight:800;font-size:1.25rem;text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo i{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--sun),var(--ember));box-shadow:0 0 0 4px color-mix(in srgb,var(--sun) 25%,transparent)}
+nav{display:flex;gap:4px}
+nav a{padding:6px 12px;border-radius:99px;text-decoration:none;color:var(--mute)}
+nav a.on{background:var(--dusk);color:var(--paper)}
+#q{margin-left:auto;min-width:0;flex:1 1 160px;max-width:280px;padding:8px 14px;border-radius:99px;border:1px solid var(--dusk);background:var(--dusk);color:var(--paper);font:inherit}
+:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+main{padding:0 4vw 60px}
+.hero{position:relative;overflow:hidden;margin:8px 0 30px;padding:clamp(40px,9vw,110px) clamp(20px,5vw,60px);border-radius:18px;background:var(--dusk)}
+.hero:before{content:"";position:absolute;right:-8%;top:-30%;width:min(60vw,520px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 40%,var(--sun),var(--ember) 70%);opacity:.9}
+.hero>*{position:relative}
+.hero h1{font-size:clamp(2.2rem,7vw,4.6rem);line-height:1;max-width:11ch}
+.hero p{max-width:46ch;margin:14px 0 22px;color:var(--paper)}
+.btn{display:inline-block;border:0;border-radius:99px;padding:10px 22px;font:inherit;font-weight:700;cursor:pointer;background:var(--sun);color:#2a1f4a;text-decoration:none}
+.btn.alt{background:var(--night);color:var(--paper);border:1px solid var(--mute)}
+section{margin:0 0 30px}
+h2{font-size:1.3rem;margin-bottom:12px}
+.row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px}
+.card{flex:0 0 140px;scroll-snap-align:start;cursor:pointer;background:none;border:0;color:inherit;text-align:left;font:inherit;padding:0}
+.grid .card{flex:auto}
+.poster{aspect-ratio:2/3;width:100%;border-radius:var(--r);object-fit:cover;background:var(--dusk);display:flex;align-items:flex-end;padding:10px;font-weight:700;line-height:1.15;overflow:hidden}
+.card:hover .poster{outline:2px solid var(--sun)}
+.card b{display:block;margin-top:6px;font-size:.9rem;font-weight:600}
+.card small{color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{border:1px solid var(--mute);background:none;color:var(--paper);padding:6px 14px;border-radius:99px;font:inherit;cursor:pointer}
+.chip.on{background:var(--sun);border-color:var(--sun);color:#2a1f4a}
+video,iframe{width:100%;aspect-ratio:16/9;background:#000;border:0;border-radius:var(--r)}
+.watch{max-width:960px;margin:14px auto}
+.watch h1{margin:16px 0 4px}
+dialog{width:min(560px,92vw);border:0;border-radius:16px;padding:22px;background:var(--dusk);color:var(--paper)}
+dialog::backdrop{background:#000a}
+.av{font-size:1.8rem;border:2px solid transparent;border-radius:50%;background:var(--dusk);width:52px;height:52px;cursor:pointer}
+.av.on{border-color:var(--sun)}
+input.t{padding:9px 14px;border-radius:var(--r);border:1px solid var(--mute);background:var(--dusk);color:var(--paper);font:inherit}
+.note{color:var(--mute);font-size:.85rem;margin-top:10px}
+footer{padding:20px 4vw 40px;color:var(--mute);font-size:.82rem;max-width:80ch}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
