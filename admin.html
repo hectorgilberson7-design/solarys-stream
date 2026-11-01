@@ -5,7 +5,8 @@
 <header><a class="logo" href="/"><i></i>SOLARYS Stream</a><span class="note">Administration</span></header>
 <main style="max-width:760px;margin:24px auto">
 <section id="login"><h2>Connexion</h2>
-<p><input class="t" id="pw" type="password" placeholder="Mot de passe admin" aria-label="Mot de passe admin"> <button class="btn" id="go">Entrer</button></p>
+<p><input class="t" id="em" type="email" placeholder="E-mail admin" aria-label="E-mail admin" autocomplete="username"></p>
+<p><input class="t" id="pw" type="password" placeholder="Mot de passe admin" aria-label="Mot de passe admin" autocomplete="current-password"> <button class="btn" id="go">Entrer</button></p>
 <p class="note" id="lerr"></p></section>
 <div id="app" hidden>
 <section><h2>Ajouter une source légale (.zip)</h2>
@@ -17,8 +18,10 @@
 <section><h2>Règles</h2><p class="note">Ajoutez uniquement des sources dont vous détenez les droits de diffusion (champ <code>license</code> obligatoire). Les flux doivent être en HTTPS (MP4 ou HLS .m3u8). Les adresses privées sont refusées.</p></section>
 </div></main>
 <script>
-const $=s=>document.querySelector(s);let PW=sessionStorage.getItem('sl_pw')||'';
-const call=async(m,b)=>{const r=await fetch('/api/admin',{method:m,headers:{'content-type':'application/json','x-admin-password':PW},body:b?JSON.stringify(b):undefined});return[r.status,await r.json()]};
+const $=s=>document.querySelector(s);let PW=sessionStorage.getItem('sl_pw')||'',EM=sessionStorage.getItem('sl_em')||'';
+const call=async(m,b)=>{try{const r=await fetch('/api/admin',{method:m,headers:{'content-type':'application/json','x-admin-password':PW,'x-admin-email':EM},body:b?JSON.stringify(b):undefined});
+  try{return[r.status,await r.json()]}catch{return[r.status,{error:'Réponse inattendue (HTTP '+r.status+') : la fonction /api/admin n’est pas déployée. Vérifiez que le dossier api est à la racine du dépôt.'}]}}
+  catch{return[0,{error:'Connexion impossible au serveur.'}]}};
 const el=(t,txt)=>Object.assign(document.createElement(t),{textContent:txt});
 async function load(){const[s,d]=await call('GET');
   if(s!==200){$('#lerr').textContent=d.error||'Erreur';$('#login').hidden=false;$('#app').hidden=true;return}
@@ -28,7 +31,8 @@ async function load(){const[s,d]=await call('GET');
   d.providers.forEach(p=>{const row=el('p',`${p.name} · ${p.count} titres · ajoutée le ${p.addedAt.slice(0,10)} `);
     const b=el('button','Supprimer');b.className='chip';b.onclick=async()=>{await call('POST',{action:'delete',slug:p.slug});load()};row.append(b);L.append(row)});
   $('#vol').textContent=d.persistent?'':'Stockage temporaire : connectez Upstash Redis (Vercel Marketplace) pour conserver les sources entre les redémarrages.'}
-$('#go').onclick=()=>{PW=$('#pw').value;sessionStorage.setItem('sl_pw',PW);load()};
+$('#pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('#go').click()});
+$('#go').onclick=()=>{$('#lerr').textContent='Vérification…';PW=$('#pw').value.trim();EM=$('#em').value.trim();sessionStorage.setItem('sl_em',EM);sessionStorage.setItem('sl_pw',PW);load()};
 $('#up').onclick=async()=>{const f=$('#f').files[0],m=$('#msg');if(!f){m.textContent='Choisissez un zip.';return}
   if(f.size>3e6){m.textContent='Zip trop gros (3 Mo max).';return}
   m.textContent='Vérification et test en cours…';
