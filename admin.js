@@ -3,7 +3,9 @@ const same=(a,b)=>{const x=Buffer.from(a||''),y=Buffer.from(b||'');return x.leng
 module.exports=async(req,res)=>{
   const pw=process.env.ADMIN_PASSWORD;
   if(!pw)return res.status(500).json({error:'Définissez ADMIN_PASSWORD dans les variables Vercel'});
-  if(!same(req.headers['x-admin-password'],pw))return res.status(401).json({error:'Mot de passe incorrect'});
+  const em=(process.env.ADMIN_EMAIL||'').trim().toLowerCase();
+  const mailOk=!em||same(String(req.headers['x-admin-email']||'').trim().toLowerCase(),em);
+  if(!(same(req.headers['x-admin-password'],pw)&&mailOk))return res.status(401).json({error:'E-mail ou mot de passe incorrect'});
   const b=req.body||{};let ps=(await store.get('providers'))||[];
   if(req.method==='GET'||b.action==='list')
     return res.json({persistent:store.persistent,providers:ps.map(({headers,...p})=>p)});
